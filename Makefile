@@ -303,7 +303,7 @@ LOCAL_CERTIFICATE=$(LOCAL_CERTIFICATE_KEY) $(LOCAL_CERTIFICATE_CERT)
 $(LOCAL_CERTIFICATE) &: $(LOCAL_CERTIFICATE_DIR) $(MKCERT)
 	$(call infoMsg,Setting up local development TLS certificate; This is required for OAuth2)
 	sudo $(MKCERT) -install
-	$(MKCERT) -key-file $(LOCAL_CERTIFICATE_KEY) -cert-file $(LOCAL_CERTIFICATE_CERT) $(LOCAL_DOMAIN)
+	sudo $(MKCERT) -key-file $(LOCAL_CERTIFICATE_KEY) -cert-file $(LOCAL_CERTIFICATE_CERT) $(LOCAL_DOMAIN)
 
 DOCKER=$(shell which docker || echo 'docker')
 DEVELOPMENT_ENV_FILE=$(MONETR_DIR)/development.env
