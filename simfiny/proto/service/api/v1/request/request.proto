@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option go_package = "github.com/SimifiniiCTO/simfiny-financial-service/proto/gen";
+
+package request;
+
+import "proto/service/api/v1/common/common.proto";
+
+// EmptyRequest: Represents a request object invoked against the social service
+// that is empty
+message EmptyRequest {}

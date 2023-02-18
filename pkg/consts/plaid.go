@@ -5,13 +5,16 @@ import (
 )
 
 var (
-	PlaidClientName = "monetr"
+	PlaidClientName = "simfiny"
 	PlaidLanguage   = "en"
 	PlaidCountries  = []plaid.CountryCode{
 		plaid.COUNTRYCODE_US,
 	}
 	PlaidProducts = []plaid.Products{
 		plaid.PRODUCTS_TRANSACTIONS,
+		plaid.PRODUCTS_INVESTMENTS,
+		plaid.PRODUCTS_LIABILITIES,
+		plaid.PRODUCTS_BALANCE,
 	}
 )
 

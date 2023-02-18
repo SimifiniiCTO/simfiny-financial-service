@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option go_package = "github.com/SimifiniiCTO/simfiny-financial-service/proto/gen";
+package endpoint.service;
+
+import "proto/service/api/v1/request/request.proto";
+import "proto/service/api/v1/response/response.proto";
+import "proto/google/api/annotations.proto";
+
+/**
+ * FinancialService: Represents the financial service of the simifinii platform.
+ *
+ * The service serves as the entrypoint for all financial interactions on the
+ * simfiny platform
+ */
+service FinancialService {
+  /*
+   ServiceHealth: Used to get the service health status of a service
+  */
+  rpc ServiceHealth(request.EmptyRequest)
+      returns (response.ServiceHealthResponse) {
+    option (google.api.http) = {
+      get : "/api/v1/financial-service/health"
+    };
+  }
+
+  /*
+    ServiceReady: Used to deduce wether service is ready to serve request
+  */
+  rpc ServiceReady(request.EmptyRequest) returns (resp.ServiceReadyResponse) {
+    option (google.api.http) = {
+      get : "/api/v1/financial-service/ready"
+    };
+  }
+}

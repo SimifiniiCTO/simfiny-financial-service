@@ -1,0 +1,15 @@
+repos:
+  - repo: https://github.com/norwoodj/helm-docs
+    rev: v1.10.0
+    hooks:
+      - id: helm-docs
+        args:
+          - --chart-search-root=.
+          - --template-files=./_templates.gotmpl
+          - --template-files=README.md.gotmpl
+  - repo: https://github.com/talos-systems/conform
+    rev: v0.1.0-alpha.25
+    hooks:
+      - id: conform
+        stages:
+          - commit-msg

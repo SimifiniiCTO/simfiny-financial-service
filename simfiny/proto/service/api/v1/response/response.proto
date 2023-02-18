@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "github.com/SimifiniiCTO/simfiny-financial-service/proto/gen";
+
+package response;
+
+// ServiceHealthResponse: Represent the object returned as a response to the
+// service health api invocation
+message ServiceHealthResponse { bool healthy = 1; }
+
+// ServiceReadyResponse: Represent the object returned as a response to the
+// service readyness api invocation
+message ServiceReadyResponse { bool ready = 1; }

@@ -1,0 +1,17 @@
+builds:
+  - main: ./main.go
+    binary: main
+    ldflags: -s -w -X github.com/SimifiniiCTO/simfiny-social-service/pkg/version.REVISION={{.Commit}}
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+    env:
+      - CGO_ENABLED=0
+    skip: true
+archives:
+  - name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - none*
