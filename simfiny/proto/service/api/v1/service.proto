@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-option go_package = "github.com/SimifiniiCTO/simfiny-financial-service/proto/gen";
+option go_package = "github.com/SimifiniiCTO/simfiny-financial-service/simfiny/proto/gen";
 package endpoint.service;
 
-import "proto/service/api/v1/request/request.proto";
-import "proto/service/api/v1/response/response.proto";
-import "proto/google/api/annotations.proto";
+import "simfiny/proto/service/api/v1/request/request.proto";
+import "simfiny/proto/service/api/v1/response/response.proto";
+import "simfiny/proto/google/api/annotations.proto";
 
 /**
  * FinancialService: Represents the financial service of the simifinii platform.

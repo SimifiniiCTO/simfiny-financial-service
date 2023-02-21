@@ -1,0 +1,394 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "simfiny/proto/service/api/v1/service.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "FinancialService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/financial-service/account": {
+      "delete": {
+        "summary": "DeleteAccount: Used to perform a delete account request",
+        "operationId": "FinancialService_DeleteAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/responseEmptyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "globalUserID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "FinancialService"
+        ]
+      },
+      "post": {
+        "summary": "CreateAccount: Used to create an account record",
+        "operationId": "FinancialService_CreateAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/responseCreateAccountResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "globalUserID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "FinancialService"
+        ]
+      }
+    },
+    "/api/v1/financial-service/health": {
+      "get": {
+        "summary": "ServiceHealth: Used to get the service health status of a service",
+        "operationId": "FinancialService_ServiceHealth",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/responseServiceHealthResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "FinancialService"
+        ]
+      }
+    },
+    "/api/v1/financial-service/plaid/link/sync": {
+      "post": {
+        "summary": "Sometimes you might need to manually trigger a resync with Plaid; this can\nhappen if there were issues where a webhook was not properly received. By\ntriggering a manual resync, transactions for the last 14 days and balances\nfor all bank accounts within the specified link will be checked.",
+        "description": "Links can be manually synced once every 30 minutes, an error will be\nreturned if you try to resync a link too quickly.\n\nNOTE - This will not send a \"sync\" request to Plaid. This will only retrieve\ndata already available via Plaid's API and update simfiny's data\naccordingly.",
+        "operationId": "FinancialService_ManuallyResyncPlaidLink",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/responseEmptyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "linkId",
+            "description": "The link ID that you want to manually resync. This must be a Plaid link\nthat is in a status of Setup or Error. Other link statuses will result in a\nbad request.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "FinancialService"
+        ]
+      }
+    },
+    "/api/v1/financial-service/plaid/link/update/{linkId}": {
+      "put": {
+        "summary": "Plaid links can be updated after they have been established. This can be\nused as a method of re-authenticating a link if it ends up in an error state\n(though sometimes a link can end up in an error state without indicating\n[2]). This can also be used as a way to add additional accounts to a link if\nthose accounts were not originally granted access when the link was created.",
+        "operationId": "FinancialService_UpdatePlaidLink",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/responsePlaidLinkUpdateResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "linkId",
+            "description": "A link ID must be provided in order to put that link into update mode. The\nlink must also be a Plaid link, a manual link will result in a bad request.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "updateAccountSelection",
+            "description": "This parameter is used to specify whether you want to put this link into an\nupdate mode that will allow you to add/remove accounts that are visible to\nmonetr. This will change the Plaid Link dialog behavior slightly when it is\npresented to the client.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "FinancialService"
+        ]
+      }
+    },
+    "/api/v1/financial-service/plaid/token/callback": {
+      "post": {
+        "summary": "Once the user has completed authenticating their bank account using the\nPlaid SDK, you will be given a public_token. This new token must be\nexchanged with Plaid's API in order to allow simfiny to access the bank\ndata. The bank account should not be considered linked until this token is\nsuccessfully exchanged.",
+        "operationId": "FinancialService_PlaidTokenCallback",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/responsePlaidLinkTokenExchangeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "publicToken",
+            "description": "The public_token you received from the Plaid Link flow via the SDK.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "institutionId",
+            "description": "The Plaid institution_id, the API will not return an error if this is not\nprovided (TODO). But it is required in order for the API to function\nproperly.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "institutionName",
+            "description": "The name of the institution as provided by the Plaid SDK. This is used as\nthe initial name for the link until the user decides to rename it.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "accountIds",
+            "description": "An array of Plaid bank account IDs, this should be the list of IDs that the\nuser selected when they were going through the link process.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          }
+        ],
+        "tags": [
+          "FinancialService"
+        ]
+      }
+    },
+    "/api/v1/financial-service/plaid/token/new": {
+      "get": {
+        "summary": "In order to connect a user's account with Plaid and thus their bank account,\nyou need to create a link token. This token is then used by the Plaid SDK in\nthe UI in order to provide an authentication flow for that user and their\nbank",
+        "operationId": "FinancialService_GetNewLinkToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/responsePlaidLinktTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "useCache",
+            "description": "If true then the endpoint will not try to create another link token if one\nhas already been created for the current user and has not been completed.\nThis is used to reduce the number of API calls made to Plaid. It is\nrecommended to use true for this. The endpoint will never return a Link\ntoken that has already been used.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "globalUserID",
+            "description": "The global user on whose behalf we are making the request",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "FinancialService"
+        ]
+      }
+    },
+    "/api/v1/financial-service/ready": {
+      "get": {
+        "summary": "ServiceReady: Used to deduce wether service is ready to serve request",
+        "operationId": "FinancialService_ServiceReady",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/responseServiceReadyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "FinancialService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "responseCreateAccountResponse": {
+      "type": "object",
+      "properties": {
+        "AccountID": {
+          "type": "string",
+          "format": "uint64"
+        }
+      },
+      "title": "CreateAccountResponse encompasses the response from a create account call"
+    },
+    "responseEmptyResponse": {
+      "type": "object",
+      "title": "EmptyResponse is a response type used in scenarios when a response is not\nexpected"
+    },
+    "responsePlaidLinkTokenExchangeResponse": {
+      "type": "object",
+      "properties": {
+        "linkId": {
+          "type": "string",
+          "format": "int64",
+          "description": "The ID of the newly created link for the Plaid connection.\nThe Link ID is not a unique identifier for Plaid, it is simfiny's internal\nunique identifier."
+        }
+      }
+    },
+    "responsePlaidLinkUpdateResponse": {
+      "type": "object",
+      "properties": {
+        "linkToken": {
+          "type": "string",
+          "description": "If the link is able to be put into update mode, then a Link Token is\nreturned to the client. This can then be used with\nthe Plaid Link library to allow the user to update their account selection\nor re - authenticate their link with their bank."
+        }
+      }
+    },
+    "responsePlaidLinktTokenResponse": {
+      "type": "object",
+      "properties": {
+        "LinkToken": {
+          "type": "string"
+        }
+      },
+      "description": "The link token created from Plaid, this can be used with the Plaid SDK to\nauthenticate a user's bank account."
+    },
+    "responseServiceHealthResponse": {
+      "type": "object",
+      "properties": {
+        "Healthy": {
+          "type": "boolean"
+        }
+      },
+      "title": "ServiceHealthResponse: Represent the object returned as a response to the\nservice health api invocation"
+    },
+    "responseServiceReadyResponse": {
+      "type": "object",
+      "properties": {
+        "Ready": {
+          "type": "boolean"
+        }
+      },
+      "title": "ServiceReadyResponse: Represent the object returned as a response to the\nservice readyness api invocation"
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}
