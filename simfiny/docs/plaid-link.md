@@ -71,7 +71,7 @@ else.
 ## Plaid Token Callback
 
 Once the user has completed authenticating their bank account using the Plaid SDK, you will be given a `public_token`.
-This new token must be exchanged with Plaid's API in order to allow monetr to access the bank data. The bank account
+This new token must be exchanged with Plaid's API in order to allow simfiny to access the bank data. The bank account
 should not be considered linked until this token is successfully exchanged.
 
 __Note__

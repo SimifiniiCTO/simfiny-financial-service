@@ -18,6 +18,8 @@ type Account struct {
 	StripeWebhookLatestTimestamp *time.Time                 `json:"-" pg:"stripe_webhook_latest_timestamp"`
 	SubscriptionActiveUntil      *time.Time                 `json:"subscriptionActiveUntil" pg:"subscription_active_until"`
 	SubscriptionStatus           *stripe.SubscriptionStatus `json:"subscriptionStatus" pg:"subscription_status"`
+	GlobalUserId                 uint64                     `json:"GlobalUserId" pg:"global_user_id,notnull,type:'bigserial'"`
+	Email                        string                     `json:"Email" pg:"email"`
 }
 
 func (a *Account) GetTimezone() (*time.Location, error) {

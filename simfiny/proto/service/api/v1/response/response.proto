@@ -6,8 +6,34 @@ package response;
 
 // ServiceHealthResponse: Represent the object returned as a response to the
 // service health api invocation
-message ServiceHealthResponse { bool healthy = 1; }
+message ServiceHealthResponse { bool Healthy = 1; }
 
 // ServiceReadyResponse: Represent the object returned as a response to the
 // service readyness api invocation
-message ServiceReadyResponse { bool ready = 1; }
+message ServiceReadyResponse { bool Ready = 1; }
+
+// CreateAccountResponse encompasses the response from a create account call
+message CreateAccountResponse { uint64 AccountID = 1; }
+
+// EmptyResponse is a response type used in scenarios when a response is not
+// expected
+message EmptyResponse {}
+
+// The link token created from Plaid, this can be used with the Plaid SDK to
+// authenticate a user's bank account.
+message PlaidLinktTokenResponse { string LinkToken = 1; }
+
+message PlaidLinkTokenExchangeResponse {
+  // The ID of the newly created link for the Plaid connection.
+  // The Link ID is not a unique identifier for Plaid, it is simfiny's internal
+  // unique identifier.
+  int64 linkId = 1;
+}
+
+message PlaidLinkUpdateResponse {
+  // If the link is able to be put into update mode, then a Link Token is
+  // returned to the client. This can then be used with
+  // the Plaid Link library to allow the user to update their account selection
+  // or re - authenticate their link with their bank.
+  string linkToken = 1;
+}

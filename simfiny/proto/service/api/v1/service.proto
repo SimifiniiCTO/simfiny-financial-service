@@ -27,9 +27,91 @@ service FinancialService {
   /*
     ServiceReady: Used to deduce wether service is ready to serve request
   */
-  rpc ServiceReady(request.EmptyRequest) returns (resp.ServiceReadyResponse) {
+  rpc ServiceReady(request.EmptyRequest)
+      returns (response.ServiceReadyResponse) {
     option (google.api.http) = {
       get : "/api/v1/financial-service/ready"
+    };
+  }
+
+  /*
+    CreateAccount: Used to create an account record
+  */
+  rpc CreateAccount(request.CreateAccountRequest)
+      returns (response.CreateAccountResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/financial-service/account"
+    };
+  }
+
+  /*
+    DeleteAccount: Used to perform a delete account request
+  */
+  rpc DeleteAccount(request.DeleteAccountRequest)
+      returns (response.EmptyResponse) {
+    option (google.api.http) = {
+      delete : "/api/v1/financial-service/account"
+    };
+  }
+
+  /*
+    In order to connect a user's account with Plaid and thus their bank account,
+    you need to create a link token. This token is then used by the Plaid SDK in
+    the UI in order to provide an authentication flow for that user and their
+    bank
+  */
+  rpc GetNewLinkToken(request.PlaidLinkTokenRequest)
+      returns (response.PlaidLinktTokenResponse) {
+    option (google.api.http) = {
+      get : "/api/v1/financial-service/plaid/token/new"
+    };
+  }
+
+  /*
+    Once the user has completed authenticating their bank account using the
+    Plaid SDK, you will be given a public_token. This new token must be
+    exchanged with Plaid's API in order to allow simfiny to access the bank
+    data. The bank account should not be considered linked until this token is
+    successfully exchanged.
+  */
+  rpc PlaidTokenCallback(request.PlaidLinkTokenExchangeRequest)
+      returns (response.PlaidLinkTokenExchangeResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/financial-service/plaid/token/callback"
+    };
+  }
+
+  /*
+    Plaid links can be updated after they have been established. This can be
+    used as a method of re-authenticating a link if it ends up in an error state
+    (though sometimes a link can end up in an error state without indicating
+    [2]). This can also be used as a way to add additional accounts to a link if
+    those accounts were not originally granted access when the link was created.
+  */
+  rpc UpdatePlaidLink(request.PlaidLinkUpdateRequest)
+      returns (response.PlaidLinkUpdateResponse) {
+    option (google.api.http) = {
+      put : "/api/v1/financial-service/plaid/link/update/{linkId}"
+    };
+  }
+
+  /*
+    Sometimes you might need to manually trigger a resync with Plaid; this can
+    happen if there were issues where a webhook was not properly received. By
+    triggering a manual resync, transactions for the last 14 days and balances
+    for all bank accounts within the specified link will be checked.
+
+    Links can be manually synced once every 30 minutes, an error will be
+    returned if you try to resync a link too quickly.
+
+    NOTE - This will not send a "sync" request to Plaid. This will only retrieve
+    data already available via Plaid's API and update simfiny's data
+    accordingly.
+  */
+  rpc ManuallyResyncPlaidLink(request.PlaidManualLinkResyncRequest)
+      returns (response.EmptyResponse) {
+    option (google.api.http) = {
+      post : "/api/v1/financial-service/plaid/link/sync"
     };
   }
 }

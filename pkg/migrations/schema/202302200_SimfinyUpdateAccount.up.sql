@@ -1,0 +1,2 @@
+ALTER TABLE "accounts" ADD COLUMN "global_user_id" BIGSERIAL NOT NULL;
+ALTER TABLE "accounts" ADD COLUMN "email" TEXT NOT NULL;

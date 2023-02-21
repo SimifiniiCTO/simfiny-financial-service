@@ -9,3 +9,59 @@ import "proto/service/api/v1/common/common.proto";
 // EmptyRequest: Represents a request object invoked against the social service
 // that is empty
 message EmptyRequest {}
+
+// CreateAccountRequest witholds parameters required to properly create an
+// account
+message CreateAccountRequest {
+  uint64 globalUserID = 1;
+  string email = 2;
+}
+
+// DeleteAccountRequest witholds the parameters required to delete an account
+message DeleteAccountRequest { uint64 globalUserID = 1; }
+
+message PlaidLinkTokenRequest {
+  /*
+    If true then the endpoint will not try to create another link token if one
+    has already been created for the current user and has not been completed.
+    This is used to reduce the number of API calls made to Plaid. It is
+    recommended to use true for this. The endpoint will never return a Link
+    token that has already been used.
+  */
+  bool useCache = 1;
+  // The global user on whose behalf we are making the request
+  uint64 globalUserID = 2;
+}
+
+message PlaidLinkTokenExchangeRequest {
+  // The public_token you received from the Plaid Link flow via the SDK.
+  string publicToken = 1;
+  // The Plaid institution_id, the API will not return an error if this is not
+  // provided (TODO). But it is required in order for the API to function
+  // properly.
+  string institutionId = 2;
+  // The name of the institution as provided by the Plaid SDK. This is used as
+  // the initial name for the link until the user decides to rename it.
+  string institutionName = 3;
+  // An array of Plaid bank account IDs, this should be the list of IDs that the
+  // user selected when they were going through the link process.
+  repeated string accountIds = 4;
+}
+
+message PlaidLinkUpdateRequest {
+  // A link ID must be provided in order to put that link into update mode. The
+  // link must also be a Plaid link, a manual link will result in a bad request.
+  int64 linkId = 1;
+  // This parameter is used to specify whether you want to put this link into an
+  // update mode that will allow you to add/remove accounts that are visible to
+  // monetr. This will change the Plaid Link dialog behavior slightly when it is
+  // presented to the client.
+  bool updateAccountSelection = 2;
+}
+
+message PlaidManualLinkResyncRequest {
+  // The link ID that you want to manually resync. This must be a Plaid link
+  // that is in a status of Setup or Error. Other link statuses will result in a
+  // bad request.
+  int64 linkId = 1;
+}

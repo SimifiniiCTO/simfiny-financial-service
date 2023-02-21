@@ -506,3 +506,45 @@ beta-code: $(GO)
 all: build test generate lint
 
 include $(PWD)/scripts/Container.mk
+
+######## SIMFINY ########
+RPC_PATHS = simfiny/rpc/service/api/v1/common/* \
+			simfiny/rpc/service/api/v1/responses/responses.proto \
+			simfiny/rpc/service/api/v1/requests/requests.proto \
+			simfiny/rpc/service/api/v1/service.proto
+
+autogen-prequisites: ## Install dependencies for protoc auto gen
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	go get github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc
+	go get github.com/srikrsna/protoc-gen-gotag
+	go install github.com/infobloxopen/protoc-gen-gorm@latest
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
+	go install github.com/srikrsna/protoc-gen-gotag
+	go install github.com/mitchellh/protoc-gen-go-json@latest
+	brew install protobuf protoc-gen-go protoc-gen-go-grpc
+
+autogen-service:
+	protoc $(RPC_PATHS) -I. -I=$(GOPATH)/src \
+	--go_out=:$(GOPATH)/src --go_opt=paths=import \
+	--go-grpc_out=:$(GOPATH)/src --go-grpc_opt=paths=import --doc_out=./docs/simfiny --doc_opt=markdown,service.md
+
+autogen-gw: ## Auto-Generate reverse proxy (gateway) definition
+	protoc $(RPC_PATHS) \ 
+			rpc/google/api/* \
+		    -I. -I=$(GOPATH)/src \
+			--grpc-gateway_out $(GOPATH)/src \
+			--grpc-gateway_opt logtostderr=true \
+			--grpc-gateway_opt paths=import \
+			--grpc-gateway_opt generate_unbound_methods=true
+
+autogen-swagger: ## Auto-Generate swagger definition
+	protoc simfiny/rpc/service/api/v1/service.proto -I. -I=$(GOPATH)/src \
+			--openapiv2_out . \
+    		--openapiv2_opt logtostderr=true \
+			--openapiv2_opt generate_unbound_methods=true \
+			--openapiv2_opt use_go_templates=true
+
+autogen: autogen-prequisites autogen-service autogen-gw autogen-gw ## Run autogen suite
+	@echo "generating grpc definitions"
